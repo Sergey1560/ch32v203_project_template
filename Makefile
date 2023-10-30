@@ -24,33 +24,13 @@ BUILD_DIR = build
 # C sources
 
 C_SOURCES = \
-Lib/Peripheral/src/ch32v20x_pwr.c \
-Lib/Peripheral/src/ch32v20x_flash.c \
-Lib/Peripheral/src/ch32v20x_bkp.c \
-Lib/Peripheral/src/ch32v20x_usart.c \
-Lib/Peripheral/src/ch32v20x_spi.c \
-Lib/Peripheral/src/ch32v20x_tim.c \
-Lib/Peripheral/src/ch32v20x_wwdg.c \
-Lib/Peripheral/src/ch32v20x_rtc.c \
-Lib/Peripheral/src/ch32v20x_exti.c \
-Lib/Peripheral/src/ch32v20x_gpio.c \
-Lib/Peripheral/src/ch32v20x_rcc.c \
-Lib/Peripheral/src/ch32v20x_can.c \
-Lib/Peripheral/src/ch32v20x_adc.c \
-Lib/Peripheral/src/ch32v20x_i2c.c \
-Lib/Peripheral/src/ch32v20x_misc.c \
-Lib/Peripheral/src/ch32v20x_iwdg.c \
-Lib/Peripheral/src/ch32v20x_opa.c \
-Lib/Peripheral/src/ch32v20x_dma.c \
-Lib/Peripheral/src/ch32v20x_crc.c \
-Lib/Peripheral/src/ch32v20x_dbgmcu.c \
 Lib/RVSIS/syscalls.c \
 Lib/RVSIS/debug.c \
 Lib/RVSIS/core_riscv.c \
 Lib/RVSIS/system_ch32v20x.c \
 Lib/RVSIS/ch32v20x_it.c \
+Lib/Mylib/uart.c \
 src/main.c
-
 
 # ASM sources
 ASM_SOURCES =  \
@@ -63,6 +43,10 @@ startup/startup_ch32v20x_D6.S
 GCC_PATH = /home/sergey/soft/SDK/xpack-riscv-none-elf-gcc-13.2.0-2/bin
 PREFIX = $(GCC_PATH)/riscv-none-elf-
 
+# GCC 8 toolchain
+#GCC_PATH = /home/sergey/soft/SDK/riscv-eabi-none/bin
+#PREFIX = $(GCC_PATH)/riscv-none-embed-
+
 CC = $(PREFIX)gcc
 AS = $(PREFIX)gcc -x assembler-with-cpp
 CP = $(PREFIX)objcopy
@@ -74,11 +58,14 @@ BIN = $(CP) -O binary -S
 #######################################
 # CFLAGS
 #######################################
+GCC_VERSION_GTEQ12 := $(shell expr `${CC} -dumpversion | cut -f1 -d.` \>= 12)
 # cpu
-#CPU = -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 
-
+ifeq "$(GCC_VERSION_GTEQ12)" "1"
 # For gcc v12 and above
-CPU = -march=rv32imac_zicsr -mabi=ilp32 -msmall-data-limit=8
+    CPU = -march=rv32imac_zicsr -mabi=ilp32 -msmall-data-limit=8
+else
+	CPU = -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 
+endif
 
 # mcu
 MCU = $(CPU) $(FPU) $(FLOAT-ABI)
@@ -88,8 +75,8 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--ILib/Peripheral/inc \
 -ILib/RVSIS \
+-ILib/Mylib \
 -Isrc
 
 # compile gcc flags
@@ -117,6 +104,8 @@ LDSCRIPT = startup/Link.ld
 LIBS = -lc -lm -lnosys
 LIBDIR = 
 LDFLAGS = $(MCU) -mno-save-restore -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -T $(LDSCRIPT) -nostartfiles -Xlinker --gc-sections -Wl,-Map=$(BUILD_DIR)/$(TARGET).map --specs=nano.specs $(LIBS) -Wl,--print-memory-usage
+
+include std_perif.mk
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin

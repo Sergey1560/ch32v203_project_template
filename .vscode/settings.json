@@ -1,9 +1,11 @@
 {
-    "cortex-debug.openocdPath": "~/soft/wch-openocd/bin/openocd",
-    "cortex-debug.gdbPath": "/home/sergey/soft/SDK/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf-gdb",
-    "cmake.sourceDirectory": "${workspaceFolder}/app",
-    "taskExplorer.enableMake": false,
+    "cortex-debug.openocdPath": "${userHome}/soft/wch-openocd/bin/openocd",
+    "cortex-debug.gdbPath": "${userHome}/soft/SDK/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf-gdb",
     "search.exclude": {
         "**/build": true
+      },
+      "files.associations": {
+        "uart.h": "c",
+        "debug.h": "c"
       }
 }

@@ -174,15 +174,14 @@ SECTIONS
 	PROVIDE( _end = _ebss);
 	PROVIDE( end = . );
 
-    .stack ORIGIN(RAM) + LENGTH(RAM) - __stack_size :
+ 	.stack :
     {
-        PROVIDE( _heap_end = . );   
-        . = ALIGN(4);
+        PROVIDE( _heap_end = . );  
+		. = ALIGN(4);
         PROVIDE(_susrstack = . );
         . = . + __stack_size;
         PROVIDE( _eusrstack = .);
     } >RAM 
-
 }
 
 
