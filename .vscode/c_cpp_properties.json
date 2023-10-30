@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "CH32V203",
+            "compilerPath": "/home/sergey/soft/SDK/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf-gcc",
+            "includePath": [
+                "${workspaceFolder}/Lib/**",
+                "${workspaceFolder}/src"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}

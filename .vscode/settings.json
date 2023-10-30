@@ -1,0 +1,9 @@
+{
+    "cortex-debug.openocdPath": "~/soft/wch-openocd/bin/openocd",
+    "cortex-debug.gdbPath": "/home/sergey/soft/SDK/xpack-riscv-none-elf-gcc-13.2.0-2/bin/riscv-none-elf-gdb",
+    "cmake.sourceDirectory": "${workspaceFolder}/app",
+    "taskExplorer.enableMake": false,
+    "search.exclude": {
+        "**/build": true
+      }
+}
