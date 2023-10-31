@@ -10,7 +10,7 @@ TARGET_DEFS=
 # debug build?
 DEBUG = 1
 # optimization for size
-OPT = -Os
+OPT = -O0
 
 #######################################
 # paths
@@ -25,10 +25,12 @@ BUILD_DIR = build
 
 C_SOURCES = \
 Lib/RVSIS/syscalls.c \
-Lib/RVSIS/debug.c \
 Lib/RVSIS/core_riscv.c \
 Lib/RVSIS/system_ch32v20x.c \
-Lib/RVSIS/ch32v20x_it.c \
+Lib/Peripheral/src/ch32v20x_misc.c \
+Lib/Mylib/rcc.c \
+Lib/Mylib/delay.c \
+Lib/Mylib/log.c \
 Lib/Mylib/uart.c \
 src/main.c
 
@@ -77,6 +79,7 @@ AS_INCLUDES =
 C_INCLUDES =  \
 -ILib/RVSIS \
 -ILib/Mylib \
+-ILib/Peripheral/inc \
 -Isrc
 
 # compile gcc flags
@@ -88,11 +91,15 @@ ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
 endif
 
+# C defines
+C_DEFS =  \
+-DCH32V20x_D6
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 
-CFLAGS += $(TARGET_DEFS)
+CFLAGS += $(TARGET_DEFS) 
+CFLAGS += $(C_DEFS) 
 
 #######################################
 # LDFLAGS
@@ -104,8 +111,6 @@ LDSCRIPT = startup/Link.ld
 LIBS = -lc -lm -lnosys
 LIBDIR = 
 LDFLAGS = $(MCU) -mno-save-restore -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -Wunused -Wuninitialized -T $(LDSCRIPT) -nostartfiles -Xlinker --gc-sections -Wl,-Map=$(BUILD_DIR)/$(TARGET).map --specs=nano.specs $(LIBS) -Wl,--print-memory-usage
-
-include std_perif.mk
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin

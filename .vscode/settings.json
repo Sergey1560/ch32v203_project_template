@@ -6,6 +6,11 @@
       },
       "files.associations": {
         "uart.h": "c",
-        "debug.h": "c"
+        "debug.h": "c",
+        "ch32v20x.h": "c",
+        "common_defs.h": "c",
+        "rcc.h": "c",
+        "log.h": "c",
+        "delay.h": "c"
       }
 }

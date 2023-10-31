@@ -1,16 +1,14 @@
-#include "debug.h"
+#include "delay.h"
 
 static uint8_t  p_us = 0;
 static uint16_t p_ms = 0;
 
-void Delay_Init(void)
-{
+void delay_init(void){
     p_us = SystemCoreClock / 8000000;
     p_ms = (uint16_t)p_us * 1000;
 }
 
-void Delay_Us(uint32_t n)
-{
+void delay_us(uint32_t n){
     uint32_t i;
 
     SysTick->SR &= ~(1 << 0);
@@ -24,8 +22,7 @@ void Delay_Us(uint32_t n)
     SysTick->CTLR &= ~(1 << 0);
 }
 
-void Delay_Ms(uint32_t n)
-{
+void delay_ms(uint32_t n){
     uint32_t i;
 
     SysTick->SR &= ~(1 << 0);

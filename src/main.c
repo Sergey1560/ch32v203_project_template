@@ -1,5 +1,5 @@
-#include "uart.h"
-#include "log.h"
+#include "common_defs.h"
+#include "rcc.h"
 /*
 LED PA15
 */
@@ -8,10 +8,12 @@ int main(void){
     uint32_t tmp;
     uint8_t i = 0;
 
+    rcc_init();
+
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-    Delay_Init();
+    delay_init();
     
-    uart_init();
+    uart_init(115200);
     DEBUG("SystemClk: %ld", SystemCoreClock);
 
     RCC->APB2PCENR |= RCC_APB2Periph_GPIOA;
@@ -21,7 +23,7 @@ int main(void){
     GPIOA->CFGHR = tmp;
 
     while(1){
-        Delay_Ms(500);
+        delay_ms(1000);
         
         if(i){
             GPIOA->BSHR = GPIO_BSHR_BR15;

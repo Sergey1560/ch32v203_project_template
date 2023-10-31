@@ -1,11 +1,12 @@
 #include "uart.h"
 
-char buffer[UART_DBG_BUFF_LEN];
-
-void uart_init(void){
+/*
+PA9  USART1 TX Push-pull alternate output
+PA10 USART1 RX Floating input or pull-up input
+*/
+void uart_init(uint32_t baudrate){
     uint32_t tmp;
 
-    //PA9 USART1 TX
     RCC->APB2PCENR |= RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA;
 
     tmp = GPIOA->CFGHR;
@@ -14,18 +15,12 @@ void uart_init(void){
     tmp |= GPIO_CFGHR_MODE9;
     GPIOA->CFGHR = tmp;
 
-    USART_InitTypeDef USART_InitStructure;
-    USART_InitStructure.USART_BaudRate = 115200;
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-    USART_InitStructure.USART_StopBits = USART_StopBits_1;
-    USART_InitStructure.USART_Parity = USART_Parity_No;
-    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_InitStructure.USART_Mode = USART_Mode_Tx;
+    USART1->CTLR1 = USART_CTLR1_TE;
+    USART1->CTLR2 = 0;
+    USART1->CTLR3 = 0;
+    USART1->BRR = (APB2_CLK)/baudrate;
 
-    USART_Init(USART1, &USART_InitStructure);
-    USART_Cmd(USART1, ENABLE);
-
-
+    USART1->CTLR1 |= USART_CTLR1_UE;
 }
 
 
@@ -47,42 +42,3 @@ void uart_send_bin(uint8_t *data, uint16_t len) {
 };
 
 
-void debug_to_uart(char *fmt,...){
-    int ret_val;
-    va_list ParamList;
-    char *ptr = (char *)buffer;
-    
-    va_start(ParamList, fmt);
-    ret_val = vsnprintf (buffer, UART_DBG_BUFF_LEN-1, fmt, ParamList);
-    va_end(ParamList);
-
-    if(ret_val){
-        uart_send_string(ptr);
-    }
-}
-
-int _write(int fd, char *buf, int size)
-{
-    uart_send_bin((uint8_t *)buf, size);
-    return size;
-}
-
-/*********************************************************************
- * @fn      _sbrk
- *
- * @brief   Change the spatial position of data segment.
- *
- * @return  size: Data length
- */
-void *_sbrk(ptrdiff_t incr)
-{
-    extern char _end[];
-    extern char _heap_end[];
-    static char *curbrk = _end;
-
-    if ((curbrk + incr < _end) || (curbrk + incr > _heap_end))
-    return NULL - 1;
-
-    curbrk += incr;
-    return curbrk - incr;
-}

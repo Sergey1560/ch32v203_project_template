@@ -1,5 +1,7 @@
-#include "stm32f1xx.h"
+#include "ch32v20x.h"
 #include "log.h"
+#include "clocks.h"
+#include "delay.h"
 
 #define ALGN4 __attribute__ ((aligned (4)))
 #define ALGN8 __attribute__ ((aligned (8)))

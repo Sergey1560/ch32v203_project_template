@@ -10,6 +10,12 @@
 //#define ERROR_MSG
 
 #ifdef DEBUG_TO_UART
+    #include "stdio.h"
+    #include "stdarg.h"
+    void debug_to_uart(char *fmt,...);
+
+    #define UART_DBG_BUFF_LEN       200
+    
     #ifdef DEBUG_MSG
         #define DEBUG(fmt, args...) debug_to_uart((char*)"[D] %s:%-4d :" fmt "\r\n", __func__, __LINE__, ## args)
     #else
@@ -30,7 +36,19 @@
     #else
         #define ERROR(fmt, args...)
     #endif
-
+#else
+    #ifdef DEBUG_MSG
+        #define DEBUG(fmt, args...)
+    #endif
+    #ifdef INFO_MSG
+        #define INFO(fmt, args...)
+    #endif
+    #ifdef WARNING_MSG
+        #define WARNING(fmt, args...)
+    #endif
+    #ifdef ERROR_MSG
+        #define ERROR(fmt, args...)
+    #endif
 #endif
 
 #endif

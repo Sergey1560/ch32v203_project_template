@@ -103,52 +103,42 @@ void SystemInit (void)
  */
 void SystemCoreClockUpdate (void)
 {
-  uint32_t tmp = 0, pllmull = 0, pllsource = 0, Pll_6_5 = 0;
+  uint32_t tmp = 0, pllmull = 0, pllsource = 0;
 	
   tmp = RCC->CFGR0 & RCC_SWS;
   
-  switch (tmp)
-  {
+  switch (tmp){
     case 0x00:
       SystemCoreClock = HSI_VALUE;
       break;
+    
     case 0x04:  
       SystemCoreClock = HSE_VALUE;
       break;
+    
     case 0x08: 
-      pllmull = RCC->CFGR0 & RCC_PLLMULL;
+      pllmull = ((RCC->CFGR0 & RCC_PLLMULL) >> 18) + 2;
       pllsource = RCC->CFGR0 & RCC_PLLSRC; 
-      pllmull = ( pllmull >> 18) + 2;
 	  
-      if(pllmull == 17) pllmull = 18;
-	  
-      if (pllsource == 0x00)
-      {
+      if (pllsource == 0x00){
         SystemCoreClock = (HSI_VALUE >> 1) * pllmull;
-      }
-      else
-      {    
-        if ((RCC->CFGR0 & RCC_PLLXTPRE) != (uint32_t)RESET)
-        {
-#if defined (CH32V20x_D8) || defined (CH32V20x_D8W)
+      }else{    
+        if ((RCC->CFGR0 & RCC_PLLXTPRE) != 0){
+          #if defined (CH32V20x_D8) || defined (CH32V20x_D8W)
           SystemCoreClock = ((HSE_VALUE>>2) >> 1) * pllmull;
-#else
+          #else
           SystemCoreClock = (HSE_VALUE >> 1) * pllmull;
-#endif
-        }
-        else
-        {
-#if defined (CH32V20x_D8) || defined (CH32V20x_D8W)
-            SystemCoreClock = (HSE_VALUE>>2) * pllmull;
-#else
+          #endif
+        }else{
+          #if defined (CH32V20x_D8) || defined (CH32V20x_D8W)
+          SystemCoreClock = (HSE_VALUE>>2) * pllmull;
+          #else
           SystemCoreClock = HSE_VALUE * pllmull;
-#endif
+          #endif
         }
       }
-
-      if(Pll_6_5 == 1) SystemCoreClock = (SystemCoreClock / 2);
-
       break;
+
     default:
       SystemCoreClock = HSI_VALUE;
       break;
