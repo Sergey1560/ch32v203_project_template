@@ -120,6 +120,8 @@ void SystemCoreClockUpdate (void)
       pllmull = ((RCC->CFGR0 & RCC_PLLMULL) >> 18) + 2;
       pllsource = RCC->CFGR0 & RCC_PLLSRC; 
 	  
+      if(pllmull == 17) pllmull = 18; 
+
       if (pllsource == 0x00){
         SystemCoreClock = (HSI_VALUE >> 1) * pllmull;
       }else{    
