@@ -262,11 +262,12 @@ RV_STATIC_INLINE uint32_t NVIC_GetActive(IRQn_Type IRQn)
  *
  * @return  none
  */
-RV_STATIC_INLINE void NVIC_SetPriority(IRQn_Type IRQn, uint8_t priority)
-{
-  NVIC->IPRIOR[(uint32_t)(IRQn)] = priority;
+RV_STATIC_INLINE void NVIC_SetPriority(IRQn_Type IRQn, uint8_t priority) {
+    if (priority > 7) {
+        priority = 7;
+    }
+    NVIC->IPRIOR[(uint32_t) (IRQn)] = priority << 5U;
 }
-
 /*********************************************************************
  * @fn       __WFI
  *
